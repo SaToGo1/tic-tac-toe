@@ -1,0 +1,43 @@
+:root{
+    --board-color: #FDD;
+    --board-cell: #FAA;
+}
+
+html{
+    box-sizing: border-box;
+}
+
+*, *:after, *:before{
+    box-sizing: inherit;
+}
+
+body{
+    margin: 0;
+}
+
+.content{
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.board{
+    background-color: var(--board-color);
+    height: 602px;
+    width: 602px;
+
+    display: grid;
+    grid-template-columns: 200px 200px 200px;
+    grid-template-rows: 200px 200px 200px;
+    gap: 1px;
+}
+
+.cell{
+    background-color: var(--board-cell);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
