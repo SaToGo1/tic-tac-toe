@@ -1,5 +1,5 @@
-
 //GameBoard will be a unique object that saves the board.
+// modify and draws the board.
 const GameBoard = (function() {
     let gameBoard = [
         [1, 0, 1],
@@ -44,15 +44,6 @@ const GameBoard = (function() {
     return {DrawBoard, PlaceMark};
 })();
 
-//GameFlow will be a unique object that will control the game.
-const GameFlow = (function(){
-
-    // We define our 2 players
-    const playerO = PlayerFactory(0);
-    const playerX = PlayerFactory(1);
-
-
-})()
 
 // PlayerFactory will define our players.
 // numMark => 0 or 1, equals to the mark the players put on the board X or O.
@@ -67,5 +58,45 @@ const PlayerFactory = (numMark) => {
     return {};
 }
 
+
+//GameFlow will be a unique object that will control the game.
+const GameFlow = (function(){
+
+    // ###################
+    // #  Private Logic  #
+    // ###################
+
+    // We define our 2 players
+    const _playerO = PlayerFactory(0);
+    const _playerX = PlayerFactory(1);
+
+    let _playerTurn = _playerO;
+
+    const _ChangeActualPlayer = () => {
+        if(_playerTurn == _playerO) _playerTurn = _playerX;
+        else _playerTurn = _playerO;
+
+    }
+
+    // ###################
+    // #  Public         #
+    // ###################
+
+    //Make an event for every cell, onclick we change the board and change the player turn.
+    const InitializeCellClickEvent = () => {
+        let cells = document.getElementsByClassName('cell');
+
+        for(let i = 0; i < cells.length; i++) {
+            cells[i].addEventListener('click', function() {
+                //_playerTurn.clickBoard();
+                _ChangeActualPlayer();
+            })
+        }
+    }
+
+    return {InitializeCellClickEvent}
+})();
+
 GameBoard.DrawBoard();
 
+GameFlow.InitializeCellClickEvent();
