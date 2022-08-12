@@ -1,5 +1,11 @@
-//GameBoard will be a unique object that saves the board.
-// modify and draws the board.
+/*
+##########################################################
+#  GameBoard
+#
+# GameBoard will be a unique object that saves the board.
+# modify and draws the board.
+##########################################################
+*/
 const GameBoard = (function() {
 
     // ###################
@@ -12,6 +18,64 @@ const GameBoard = (function() {
         [2, 2, 2],
         [2, 2, 2]]; 
 
+    //will check if the row 3 times the same mark, 
+    //we only need to know in which row( y ) we are right now.
+    const _CheckRow = (y) => {
+        if((_gameBoard[y][0] == _gameBoard[y][1]) && (_gameBoard[y][0] == _gameBoard[y][2])){
+            console.log("there are 3 in a row (rows)")
+            return true;
+        }
+        return false;
+    }
+
+    //will check if the column 3 times the same mark, 
+    //we only need to know in which column( x ) we are right now.
+    const _CheckColumn = (x) => {
+        if((_gameBoard[0][x] == _gameBoard[1][x]) && (_gameBoard[0][x] == _gameBoard[2][x])){
+            console.log("there are 3 in a row (columns)")
+            return true;
+        }
+        return false;
+    }
+
+    
+    const _checkDiagonal = () => {
+        //if the diagonal is the same Marks
+        if((_gameBoard[1][1] == _gameBoard[0][0]) && (_gameBoard[1][1] == _gameBoard[2][2])){
+            // And the diagonal is different from empty ( 2 in gameboard). 
+            if((_gameBoard[1][1] != 2) && (_gameBoard[0][0] != 2) && (_gameBoard[2][2] != 2)){
+                console.log("there are 3 in a row (diagonal 1)")
+                return true;
+            }
+        
+        //if the diagonal is the same Marks
+        } else if((_gameBoard[1][1] == _gameBoard[0][2]) && (_gameBoard[1][1] == _gameBoard[2][0])){
+            // And the diagonal is different from empty ( 2 in gameboard).
+            if((_gameBoard[1][1] != 2) && (_gameBoard[0][2] != 2) && (_gameBoard[2][0] != 2)){
+                console.log("there are 3 in a row (diagonal 2)")
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*const _checkTie = () => {
+
+    }*/
+
+    // passes from array index to matrix index.
+    // GET
+    //   index => number from 0 to 8.
+    // RETURN
+    //   x => 0 to 2
+    //   y => 0 to 2
+    const _ArrayIndexToMatrix = (index) => {
+        //We use x and y to access a matrix which index go from 0 to 2 
+        //depending on the number 'index' that goes from 0 to 8.
+        let y = Math.floor(index/3);
+        let x = index%3;
+        return [ x, y ];
+    }
 
     // ###################
     // #  Public         #
@@ -23,13 +87,11 @@ const GameBoard = (function() {
 
         for(let i = 0; i < cells.length; i++) {
         
-            //We use x and y to access a matrix which index go from 0 to 2 
-            //depending on the number 'i' that goes from 0 to 8.
-            let x = Math.floor(i/3);
-            let y = i%3; 
+            //get the matrix index from linear 0-8 Index.
+            let [x, y] = _ArrayIndexToMatrix(i);
             
-            if(_gameBoard[x][y] == 1) cells[i].innerHTML = 'X'; 
-            else if(_gameBoard[x][y] == 0) cells[i].innerHTML = 'O'; 
+            if(_gameBoard[y][x] == 1) cells[i].innerHTML = 'X'; 
+            else if(_gameBoard[y][x] == 0) cells[i].innerHTML = 'O'; 
             else cells[i].innerHTML = ' ';// otherwise empty cell
         }
     }
@@ -39,24 +101,43 @@ const GameBoard = (function() {
     //numMark => 0 or 1, will define the board mark.
     const PlaceMark = (i, numMark) => {
 
-        //get the matrix index from linear 0-8 ID.
-        let x = Math.floor(i/3);
-        let y = i%3;
+        //get the matrix index from linear 0-8 Index.
+        let [x, y] = _ArrayIndexToMatrix(i);
 
         // if the board cell is empty we put the mark we get from
         // numMark, if board is 0 or 1 we don't put a mark.
-        if(_gameBoard[x][y] == 2) _gameBoard[x][y] = numMark;
+        if(_gameBoard[y][x] == 2) _gameBoard[y][x] = numMark;
 
         // Actualize Board
         DrawBoard();
     }
 
-    return {DrawBoard, PlaceMark};
+    //Check if there is 3 marks in a row
+    //Get 
+    //  index => index from the array of cells.
+    //Return
+    //  true or false, true if any combination of 3 marks. 
+    const Check3InARow = (index) => {
+        let threeInARow = false;
+        let [x, y] = _ArrayIndexToMatrix(index);
+        
+        threeInARow = (_CheckRow(y) || _CheckColumn(x) || _checkDiagonal());
+        
+        return threeInARow
+    }
+
+    return {DrawBoard, PlaceMark, Check3InARow};
 })();
 
 
-// PlayerFactory will define our players.
-// numMark => 0 or 1, equals to the mark the players put on the board X or O.
+/*
+##########################################################
+#  Player Factory
+#
+# PlayerFactory will define produce players.
+# numMark => 0 or 1, equals to the mark the players put on the board X or O.
+##########################################################
+*/
 const PlayerFactory = (numMark) => {
 
     let _numMark = numMark;
@@ -72,7 +153,13 @@ const PlayerFactory = (numMark) => {
 }
 
 
-//GameFlow will be a unique object that will control the game.
+/*
+##########################################################
+#  Game Flow
+#
+# GameFlow will be a unique object that will control the game.
+##########################################################
+*/
 const GameFlow = (function(){
 
     // ###################
@@ -90,7 +177,6 @@ const GameFlow = (function(){
         else _playerTurn = _playerO;
 
     }
-
     // ###################
     // #  Public         #
     // ###################
@@ -103,6 +189,7 @@ const GameFlow = (function(){
             cells[i].addEventListener('click', function() {
                 _playerTurn.putMark(i);
                 _ChangeActualPlayer();
+                GameBoard.Check3InARow(i);
             })
         }
     }
