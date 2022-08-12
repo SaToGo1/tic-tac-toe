@@ -1,11 +1,21 @@
 //GameBoard will be a unique object that saves the board.
 // modify and draws the board.
 const GameBoard = (function() {
-    let gameBoard = [
-        [1, 0, 1],
-        [1, 1, 0],
-        [0, 1, 0]]; 
-        //Array that will control the board. 0 => 'O' and 1 => 'X' or 2 => ' ' empty.
+
+    // ###################
+    // #  Private Logic  #
+    // ###################
+
+    //Array that will control the board. 0 => 'O' and 1 => 'X' or 2 => ' ' empty.
+    let _gameBoard = [
+        [2, 2, 2],
+        [2, 2, 2],
+        [2, 2, 2]]; 
+
+
+    // ###################
+    // #  Public         #
+    // ###################
 
     // Function To Draw the board.
     const DrawBoard = () => {
@@ -18,8 +28,8 @@ const GameBoard = (function() {
             let x = Math.floor(i/3);
             let y = i%3; 
             
-            if(gameBoard[x][y] == 1) cells[i].innerHTML = 'X'; 
-            else if(gameBoard[x][y] == 0) cells[i].innerHTML = 'O'; 
+            if(_gameBoard[x][y] == 1) cells[i].innerHTML = 'X'; 
+            else if(_gameBoard[x][y] == 0) cells[i].innerHTML = 'O'; 
             else cells[i].innerHTML = ' ';// otherwise empty cell
         }
     }
@@ -35,7 +45,7 @@ const GameBoard = (function() {
 
         // if the board cell is empty we put the mark we get from
         // numMark, if board is 0 or 1 we don't put a mark.
-        if(gameBoard[x][y] == 2) gameBoard[x][y] = numMark;
+        if(_gameBoard[x][y] == 2) _gameBoard[x][y] = numMark;
 
         // Actualize Board
         DrawBoard();
@@ -51,11 +61,14 @@ const PlayerFactory = (numMark) => {
 
     let _numMark = numMark;
 
-    /*const clickBoard = () => {
-        GameBoard.PlaceMark(_numMark);
-    }*/
+    // putMark passes the number of cell and the mark
+    // to place to the GameBoard Object.
+    // i =>gets the number of the cell
+    const putMark = (i) => {
+        GameBoard.PlaceMark(i, _numMark);
+    }
 
-    return {};
+    return {putMark};
 }
 
 
@@ -88,7 +101,7 @@ const GameFlow = (function(){
 
         for(let i = 0; i < cells.length; i++) {
             cells[i].addEventListener('click', function() {
-                //_playerTurn.clickBoard();
+                _playerTurn.putMark(i);
                 _ChangeActualPlayer();
             })
         }
