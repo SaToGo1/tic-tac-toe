@@ -59,10 +59,6 @@ const GameBoard = (function() {
         return false;
     }
 
-    /*const _checkTie = () => {
-
-    }*/
-
     // passes from array index to matrix index.
     // GET
     //   index => number from 0 to 8.
@@ -123,10 +119,24 @@ const GameBoard = (function() {
         
         threeInARow = (_CheckRow(y) || _CheckColumn(x) || _checkDiagonal());
         
-        return threeInARow
+        return threeInARow;
     }
 
-    return {DrawBoard, PlaceMark, Check3InARow};
+    //Check if all the cells are different from 2 ("Empty")
+    //so it means the board is filled.
+    //RETURN => true or false
+    const BoardFilled = () => {
+        // if every cell is different from 2, there are not empty spaces and we may have a tie.
+        let differentFrom2 = _gameBoard.every(function(row, cell){
+            return row.every(function(cell){
+                return cell != 2;
+            });
+        });
+
+        return differentFrom2;
+    }
+
+    return {DrawBoard, PlaceMark, Check3InARow, BoardFilled};
 })();
 
 
@@ -136,11 +146,13 @@ const GameBoard = (function() {
 #
 # PlayerFactory will define produce players.
 # numMark => 0 or 1, equals to the mark the players put on the board X or O.
+# playerName => string with name of the player.
 ##########################################################
 */
-const PlayerFactory = (numMark) => {
+const PlayerFactory = (numMark, playerName) => {
 
     let _numMark = numMark;
+    let _name = playerName;
 
     // putMark passes the number of cell and the mark
     // to place to the GameBoard Object.
@@ -149,7 +161,11 @@ const PlayerFactory = (numMark) => {
         GameBoard.PlaceMark(i, _numMark);
     }
 
-    return {putMark};
+    const getName = () => {
+        return _name;
+    }
+
+    return {putMark, getName};
 }
 
 
@@ -167,15 +183,37 @@ const GameFlow = (function(){
     // ###################
 
     // We define our 2 players
-    const _playerO = PlayerFactory(0);
-    const _playerX = PlayerFactory(1);
+    const _playerO = PlayerFactory(0, "Player O");
+    const _playerX = PlayerFactory(1, "Player X");
 
     let _playerTurn = _playerO;
+
+    let _win = false;
+    let _tie = false;
 
     const _ChangeActualPlayer = () => {
         if(_playerTurn == _playerO) _playerTurn = _playerX;
         else _playerTurn = _playerO;
 
+    }
+
+    const _MainGameFlow = function(cellNumber){
+        if(!(_win) && !(_tie)) {
+            _ChangeActualPlayer();
+            _playerTurn.putMark(cellNumber);
+
+            //check if we have winner
+            _win = GameBoard.Check3InARow(cellNumber);         
+            //check if we have a tie
+            if(!(_win)) _tie = GameBoard.BoardFilled();
+            
+            //If win or tie show message
+            if(_win) console.log(`${_playerTurn.getName()} win`);
+            else if(_tie) console.log(`Tie`);
+        } else{
+            if(_win) console.log(`${_playerTurn.getName()} win`);
+            else if(_tie) console.log(`Tie`);
+        }
     }
     // ###################
     // #  Public         #
@@ -186,11 +224,9 @@ const GameFlow = (function(){
         let cells = document.getElementsByClassName('cell');
 
         for(let i = 0; i < cells.length; i++) {
-            cells[i].addEventListener('click', function() {
-                _playerTurn.putMark(i);
-                _ChangeActualPlayer();
-                GameBoard.Check3InARow(i);
-            })
+            cells[i].addEventListener('click', function(){
+                _MainGameFlow(i);
+            });
         }
     }
 
@@ -198,5 +234,4 @@ const GameFlow = (function(){
 })();
 
 GameBoard.DrawBoard();
-
 GameFlow.InitializeCellClickEvent();
