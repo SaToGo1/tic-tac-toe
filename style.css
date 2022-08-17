@@ -1,10 +1,12 @@
 :root{
     --board-color: #FDD;
     --board-cell: #FAA;
+    --black-bg: #000;
 }
 
 html{
     box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
 }
 
 *, *:after, *:before{
@@ -15,12 +17,42 @@ body{
     margin: 0;
 }
 
-.content{
+.main{
     height: 100vh;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    grid-template-rows: 50px 1fr;
+
+    grid-template-areas:
+    "header"
+    "content";
+}
+
+.header {
+    color: var(--board-color);
+    background-color: var(--black-bg);
+    text-align: center;
+    font-size: 40px;
+
+    grid-area: "header";
+}
+
+.headerText{
+    margin: 0;
+}
+
+.content{
+    background-color: var(--board-color);
+    
+    display: grid;
+    grid-template-columns: 1fr 602px 1fr;
+    grid-template-rows: 150px 602px 1fr;
+    grid-template-areas: 
+    ". info ."
+    ". board buttons"
+    ". player .";
+
+
 }
 
 .board{
@@ -29,14 +61,111 @@ body{
     width: 602px;
 
     display: grid;
-    grid-template-columns: 200px 200px 200px;
-    grid-template-rows: 200px 200px 200px;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
     gap: 1px;
+
+    grid-area: board;
 }
 
 .cell{
     background-color: var(--board-cell);
     font-size: 100px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.player{
+    grid-area: player;
+    margin-top: 20px;
+    
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 10px;
+
+}
+
+.playerX{
+    font-size: 16px;
+    font-weight: bold;
+
+    color: var(--black-bg);
+    background-color: var(--board-cell);
+
+    border: none;
+    border-radius: 3px;
+
+    padding: 10px 40px;
+    cursor: pointer;
+}
+
+.playerX:hover {
+    background-color: #F99;
+}
+
+.playerX:active {
+    background-color: #F99;
+    border-bottom: 2px solid #000;
+}
+
+.playerO{
+    font-size: 16px;
+    font-weight: bold;
+
+    color: var(--black-bg);
+    background-color: var(--board-cell);
+
+    border: none;
+    border-radius: 3px;
+
+    padding: 10px 40px;
+    cursor: pointer;
+}
+
+.playerO:hover {
+    background-color: #F99;
+}
+
+.playerO:active {
+    background-color: #F99;
+    border-bottom: 2px solid #000;
+}
+
+.sideCommand{
+    grid-area: buttons;
+    margin-left: 20px;
+
+    display: flex;
+    align-items: flex-start;
+}
+
+.restartButton{
+    font-size: 16px;
+    font-weight: bold;
+
+    color: var(--black-bg);
+    background-color: var(--board-cell);
+
+    border: none;
+    border-radius: 3px;
+
+    padding: 10px 40px;
+    cursor: pointer;
+}
+
+.restartButton:hover {
+    background-color: #F99;
+  }
+  
+  .restartButton:active {
+    background-color: #F77;
+  }
+
+.info{
+    grid-area: info;
 
     display: flex;
     justify-content: center;
