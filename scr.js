@@ -1,6 +1,6 @@
 /*
 ##########################################################
-#  GameBoard
+#  GameBoard Module
 #
 # GameBoard will be a unique object that saves the board.
 # modify and draws the board.
@@ -12,7 +12,7 @@ const GameBoard = (function() {
     // #  Private Logic  #
     // ###################
 
-    //Array that will control the board. 0 => 'O' and 1 => 'X' or 2 => ' ' empty.
+    //Array that will control the board. 0 => 'O' and 1 => 'X' and 2 => ' ' empty.
     let _gameBoard = [
         [2, 2, 2],
         [2, 2, 2],
@@ -127,7 +127,7 @@ const GameBoard = (function() {
     //RETURN => true or false
     const BoardFilled = () => {
         // if every cell is different from 2, there are not empty spaces and we may have a tie.
-        let differentFrom2 = _gameBoard.every(function(row, cell){
+        let differentFrom2 = _gameBoard.every(function(row){
             return row.every(function(cell){
                 return cell != 2;
             });
@@ -171,7 +171,7 @@ const PlayerFactory = (numMark, playerName) => {
 
 /*
 ##########################################################
-#  Game Flow
+#  Game Flow Module
 #
 # GameFlow will be a unique object that will control the game.
 ##########################################################
@@ -191,10 +191,13 @@ const GameFlow = (function(){
     let _win = false;
     let _tie = false;
 
+    _infoDOM = document.getElementById("info");
+
     const _ChangeActualPlayer = () => {
+        _DisplayPlayer(_playerTurn);
+
         if(_playerTurn == _playerO) _playerTurn = _playerX;
         else _playerTurn = _playerO;
-
     }
 
     const _MainGameFlow = function(cellNumber){
@@ -207,13 +210,25 @@ const GameFlow = (function(){
             //check if we have a tie
             if(!(_win)) _tie = GameBoard.BoardFilled();
             
-            //If win or tie show message
-            if(_win) console.log(`${_playerTurn.getName()} win`);
-            else if(_tie) console.log(`Tie`);
+            //If win or the show message
+            if(_win) _DisplayWin();
+            else if(_tie) _DisplayTie();
         } else{
-            if(_win) console.log(`${_playerTurn.getName()} win`);
-            else if(_tie) console.log(`Tie`);
+            if(_win) _DisplayWin();
+            else if(_tie) _DisplayTie();
         }
+    }
+
+    const _DisplayPlayer = (player) => {
+        _infoDOM.innerHTML = player.getName() + " Turn";
+    }
+
+    const _DisplayWin = () => {
+        _infoDOM.innerHTML = _playerTurn.getName() + " Wonered";
+    }
+
+    const _DisplayTie = () => {
+        _infoDOM.innerHTML = "TIE";
     }
     // ###################
     // #  Public         #
