@@ -136,7 +136,16 @@ const GameBoard = (function() {
         return differentFrom2;
     }
 
-    return {DrawBoard, PlaceMark, Check3InARow, BoardFilled};
+    const restart = () => {
+        _gameBoard = [
+            [2, 2, 2],
+            [2, 2, 2],
+            [2, 2, 2]];
+        
+        DrawBoard();
+    }
+
+    return {DrawBoard, PlaceMark, Check3InARow, BoardFilled, restart};
 })();
 
 
@@ -202,6 +211,11 @@ const GameFlow = (function(){
 
     const _MainGameFlow = function(cellNumber){
         if(!(_win) && !(_tie)) {
+
+            //this is a bit confusing our first player to play is playerX
+            //as we change the player first thing entering the game flow
+            //to start with playerX we have to set PlayerO as initial 
+            //player turn 
             _ChangeActualPlayer();
             _playerTurn.putMark(cellNumber);
 
@@ -224,12 +238,23 @@ const GameFlow = (function(){
     }
 
     const _DisplayWin = () => {
-        _infoDOM.innerHTML = _playerTurn.getName() + " Wonered";
+        _infoDOM.innerHTML = _playerTurn.getName() + " Win";
     }
 
     const _DisplayTie = () => {
         _infoDOM.innerHTML = "TIE";
     }
+
+    const _restart = () => {
+        GameBoard.restart();
+        _tie = false;
+        _win = false;
+
+        //remember to start with playerX we set up playerO as initial.
+        _playerTurn = _playerO;
+        _DisplayPlayer(_playerX);
+    }
+
     // ###################
     // #  Public         #
     // ###################
@@ -237,12 +262,19 @@ const GameFlow = (function(){
     //Make an event for every cell, onclick we change the board and change the player turn.
     const InitializeCellClickEvent = () => {
         let cells = document.getElementsByClassName('cell');
+        let restart = document.getElementById('restartButton');
 
+        //add click event to the cells.
         for(let i = 0; i < cells.length; i++) {
             cells[i].addEventListener('click', function(){
                 _MainGameFlow(i);
             });
         }
+
+        // Add click event to restart button.
+        restart.addEventListener('click', function(){
+            _restart();
+        });
     }
 
     return {InitializeCellClickEvent}
