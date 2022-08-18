@@ -255,14 +255,22 @@ const GameFlow = (function(){
         _DisplayPlayer(_playerX);
     }
 
+    const _SelectPlayer = (buttonSelected, secondButton, PlayerSelected, secondPlayer) => {
+        buttonSelected.style.borderBottom = "thick solid black";
+        secondButton.style.borderBottom = "none";
+        _restart();
+    }
+
     // ###################
     // #  Public         #
     // ###################
 
     //Make an event for every cell, onclick we change the board and change the player turn.
-    const InitializeCellClickEvent = () => {
+    const InitializeGameEvents = () => {
         let cells = document.getElementsByClassName('cell');
         let restart = document.getElementById('restartButton');
+        let buttonX = document.getElementById('playerX');
+        let buttonO = document.getElementById('playerO');
 
         //add click event to the cells.
         for(let i = 0; i < cells.length; i++) {
@@ -275,10 +283,20 @@ const GameFlow = (function(){
         restart.addEventListener('click', function(){
             _restart();
         });
+
+        buttonX.addEventListener('click', function(){
+            _SelectPlayer(buttonX, buttonO);
+        });
+
+        buttonO.addEventListener('click', function(){
+            _SelectPlayer(buttonO, buttonX);
+        });
+
+
     }
 
-    return {InitializeCellClickEvent}
+    return {InitializeGameEvents}
 })();
 
 GameBoard.DrawBoard();
-GameFlow.InitializeCellClickEvent();
+GameFlow.InitializeGameEvents();
